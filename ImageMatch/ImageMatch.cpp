@@ -89,7 +89,7 @@ static int WriteFeatures2File(const string& file_name, const Mat& features)
 	return 0;
 }
 
-//ĞèÒªµ÷ÊÔ
+//éœ€è¦è°ƒè¯•
 static int load_keypoints_from_file(const string& file_name, vector<KeyPoint> &keyPts)
 {
 	FILE* fp = fopen(file_name.c_str(), "r");
@@ -196,7 +196,7 @@ static void findGoodMatchePoints(Mat imageDesc1, Mat imageDesc2, vector<DMatch> 
 	matcher.knnMatch(imageDesc2, matchePoints, 2);
 	cout << "total match points: " << matchePoints.size() << endl;
 
-	// Lowe's algorithm,»ñÈ¡ÓÅĞãÆ¥Åäµã
+	// Lowe's algorithm,è·å–ä¼˜ç§€åŒ¹é…ç‚¹
 	for (int i = 0; i < matchePoints.size(); i++)
 	{
 		if (matchePoints[i][0].distance < 0.6 * matchePoints[i][1].distance)
@@ -220,7 +220,7 @@ static void findGoodMatcheImage(Mat imageDesc1, vector<Mat>& refImgDescs, int &m
 
 	//matchIndex = matcher.
 
-	// Lowe's algorithm,»ñÈ¡ÓÅĞãÆ¥Åäµã
+	// Lowe's algorithm,è·å–ä¼˜ç§€åŒ¹é…ç‚¹
 	for (int i = 0; i < matchePoints.size(); i++)
 	{
 		//matchIndex = matchePoints[i].imgIdx;
@@ -241,35 +241,35 @@ static float calAngle(Point2f p1_I1, Point2f p2_I1, Point2f p1_I2, Point2f p2_I2
 	float b = sqrt((p1_I2.x - p2_I2.x) * (p1_I2.x - p2_I2.x) + (p1_I2.y - p2_I2.y) * (p1_I2.y - p2_I2.y));
 	float c = (p1_I1.x - p2_I1.x) * (p1_I2.x - p2_I2.x) + (p1_I1.y - p2_I1.y) * (p1_I2.y - p2_I2.y);
 
-	//´ı²âÍ¼Æ¬Óë²Î¿¼Í¼Æ¬µÄ¼Ğ½Ç(²»º¬·½Ïò)
+	//å¾…æµ‹å›¾ç‰‡ä¸å‚è€ƒå›¾ç‰‡çš„å¤¹è§’(ä¸å«æ–¹å‘)
 	float sitar = acos(c / (a * b)) * DEGREE;
 
-	//ÅĞ¶Ï´ı²âÍ¼ÏñÏà¶ÔÓÚ²Î¿¼Í¼Æ¬µÄĞı×ª·½Ïò
-	//²Î¿¼Í¼ÏñÓëXÖáÕıÏòµÄ¼Ğ½Ç
+	//åˆ¤æ–­å¾…æµ‹å›¾åƒç›¸å¯¹äºå‚è€ƒå›¾ç‰‡çš„æ—‹è½¬æ–¹å‘
+	//å‚è€ƒå›¾åƒä¸Xè½´æ­£å‘çš„å¤¹è§’
 	float sitarRef = asin((p1_I1.y - p2_I1.y) / a);
 	if (p1_I1.x > p2_I1.x)
 	{
 		sitarRef = PI - sitarRef;
 	}
-	//´ı²âÍ¼ÏñÓëXÖáÕıÏòµÄ¼Ğ½Ç
+	//å¾…æµ‹å›¾åƒä¸Xè½´æ­£å‘çš„å¤¹è§’
 	float sitarTest = asin((p1_I2.y - p2_I2.y) / b);
 	if (p1_I1.x > p2_I1.x)
 	{
 		sitarTest = PI - sitarTest;
 	}
 
-	//Èô´ı²âÍ¼¼Ğ½Ç´óÓÚ²Î¿¼Í¼£¬Ôò´ı²âÍ¼ĞèÒªÄæÊ±ÕëĞı×ªsitar½Ç¶Èµ½²Î¿¼Í¼µÄ·½Ïò£¬¹Ê½Ç¶ÈÎª¸ºÖµ
+	//è‹¥å¾…æµ‹å›¾å¤¹è§’å¤§äºå‚è€ƒå›¾ï¼Œåˆ™å¾…æµ‹å›¾éœ€è¦é€†æ—¶é’ˆæ—‹è½¬sitarè§’åº¦åˆ°å‚è€ƒå›¾çš„æ–¹å‘ï¼Œæ•…è§’åº¦ä¸ºè´Ÿå€¼
 	if (sitarTest < sitarRef)
 	{
-		return -sitar;//ÄæÊ±Õë
+		return -sitar;//é€†æ—¶é’ˆ
 	}
 	else
 	{
-		return sitar;//Ë³Ê±Õë
+		return sitar;//é¡ºæ—¶é’ˆ
 	}
 }
 
-//ÔÚ½ÏºÃµÄÆ¥ÅäµãÖĞÕÒµ½µ¥ÕÅÍ¼ÖĞ¾àÀë×î´óµÄÁ½¸öµã£¬ÓÃÓÚ¼ÆËã´ı´¦ÀíÍ¼Æ¬µÄĞı×ª½Ç¶È
+//åœ¨è¾ƒå¥½çš„åŒ¹é…ç‚¹ä¸­æ‰¾åˆ°å•å¼ å›¾ä¸­è·ç¦»æœ€å¤§çš„ä¸¤ä¸ªç‚¹ï¼Œç”¨äºè®¡ç®—å¾…å¤„ç†å›¾ç‰‡çš„æ—‹è½¬è§’åº¦
 static float getRotatedAngle(Mat &refImg, Mat &testImg,std::vector<DMatch>& matches, const std::vector<KeyPoint>& keypointsR, const std::vector<KeyPoint>& keypointsT)
 {
 	Mat refImage = refImg.clone();
@@ -280,7 +280,7 @@ static float getRotatedAngle(Mat &refImg, Mat &testImg,std::vector<DMatch>& matc
 	//double minDist = matches.front().distance;
 	//double maxDist = matches.back().distance;
 
-	const int ptsPairs = GOOD_PTS_MAX;//std::min(GOOD_PTS_MAX, (int)(matches.size() * GOOD_PORTION));
+	const int ptsPairs = std::min(GOOD_PTS_MAX, (int)(matches.size() * GOOD_PORTION));
 	for (int i = 0; i < ptsPairs; i++)
 	{
 		good_matches.push_back(matches[i]);
@@ -290,7 +290,7 @@ static float getRotatedAngle(Mat &refImg, Mat &testImg,std::vector<DMatch>& matc
 
 	//std::cout << "Calculating homography using " << ptsPairs << " point pairs." << std::endl;
 
-	//¼ÆËã±ê×¼Í¼ÖĞÂË³ıºóµÄÆ¥ÅäµãÖ®¼äµÄÖ±Ïß¾àÀë£¬È¡³ö¾àÀë×î³¤µÄÁ½¸öµã	
+	//è®¡ç®—æ ‡å‡†å›¾ä¸­æ»¤é™¤åçš„åŒ¹é…ç‚¹ä¹‹é—´çš„ç›´çº¿è·ç¦»ï¼Œå–å‡ºè·ç¦»æœ€é•¿çš„ä¸¤ä¸ªç‚¹	
 	float maxLen = 0;
 	int index1 = 0;
 	int index2 = 0;
@@ -315,7 +315,7 @@ static float getRotatedAngle(Mat &refImg, Mat &testImg,std::vector<DMatch>& matc
 	}
 
 
-	//¸ù¾İ²Î¿¼Í¼ÖĞµÄ¾àÀë×î³¤µÄÁ½¸öµã£¬¼ÆËã²âÊÔÍ¼Ïà¶ÔÓÚ²Î¿¼Í¼µÄĞı×ª½Ç¶È
+	//æ ¹æ®å‚è€ƒå›¾ä¸­çš„è·ç¦»æœ€é•¿çš„ä¸¤ä¸ªç‚¹ï¼Œè®¡ç®—æµ‹è¯•å›¾ç›¸å¯¹äºå‚è€ƒå›¾çš„æ—‹è½¬è§’åº¦
 	Point2f pt1_Ref = keypointsR[good_matches[index1].trainIdx].pt;
 	Point2f pt2_Ref = keypointsR[good_matches[index2].trainIdx].pt;
 
@@ -343,7 +343,7 @@ static RotatedRect getMinRect(Mat& sourceImage)
 	vector<Vec4i> hierarchy;
 	findContours(threshImg, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
-	//Ä¬ÈÏÈ¡Ãæ»ı×î´óµÄÂÖÀª×÷ÎªÄ¿±êÂÖÀª
+	//é»˜è®¤å–é¢ç§¯æœ€å¤§çš„è½®å»“ä½œä¸ºç›®æ ‡è½®å»“
 	int maxCount = 0;
 	int maxIndex = 0;
 	for (int i = 0; i < contours.size(); i++)
@@ -403,7 +403,7 @@ int main(int argc, char* argv[])
 	vector<Mat> refImg;
 
 	tm.start();
-	//»ñÈ¡²Î¿¼Í¼¿âÖĞÍ¼Æ¬µÄÌØÕ÷
+	//è·å–å‚è€ƒå›¾åº“ä¸­å›¾ç‰‡çš„ç‰¹å¾
 	for (auto f : imgRefPaths)
 	{
 		Mat tmpImg = imread(f);
@@ -421,7 +421,7 @@ int main(int argc, char* argv[])
 			string desFileName = refChromeFeaPath + "/descriptor/" + fileName + ".txt";
 			string keyFileName = refChromeFeaPath + "/keypoints/" + fileName + ".txt";
 
-			//ÈôÌØÕ÷µã»òÃèÊöÎÄ¼şÓĞÈÎºÎÒ»¸ö²»´æÔÚ£¬¶¼½«ÖØĞÂÑµÁ·²Î¿¼Í¼¿â
+			//è‹¥ç‰¹å¾ç‚¹æˆ–æè¿°æ–‡ä»¶æœ‰ä»»ä½•ä¸€ä¸ªä¸å­˜åœ¨ï¼Œéƒ½å°†é‡æ–°è®­ç»ƒå‚è€ƒå›¾åº“
 			if ((_access(desFileName.c_str(), 0) == -1) || (_access(keyFileName.c_str(), 0) == -1))
 			{
 				std::vector<KeyPoint> keypoints1;
@@ -460,7 +460,7 @@ int main(int argc, char* argv[])
 	//std::cout << "Couldn't load " << leftName << std::endl;
 
 	int refNum = featuressRef.size();
-	//»ñÈ¡²âÊÔÍ¼Æ¬µÄÌØÕ÷
+	//è·å–æµ‹è¯•å›¾ç‰‡çš„ç‰¹å¾
 	std::sprintf(buffer, testPath.c_str());
 	vector<string> imgTestPaths = newUtils::getFiles(buffer);
 
@@ -507,7 +507,7 @@ int main(int argc, char* argv[])
 				findGoodMatchePoints(featuressRef[i], descriptors1, tmpGoodPoints);
 
 				int tmpVal = tmpGoodPoints.size();
-				//Æ¥Åä×î¶àµÄÈÏÎªÊÇÏà¶ÔÓ¦µÄÍ¼Ïñ
+				//åŒ¹é…æœ€å¤šçš„è®¤ä¸ºæ˜¯ç›¸å¯¹åº”çš„å›¾åƒ
 				if (tmpVal > maxValue)
 				{
 					GoodMatchePoints.clear();
@@ -517,10 +517,10 @@ int main(int argc, char* argv[])
 				}
 			}
 			*/
-			//¼ÆËãµ±Ç°²âÊÔÍ¼Æ¬ÓëÆ¥Åä²Î¿¼Í¼Æ¬Ö®¼äµÄĞı×ª½Ç¶È
+			//è®¡ç®—å½“å‰æµ‹è¯•å›¾ç‰‡ä¸åŒ¹é…å‚è€ƒå›¾ç‰‡ä¹‹é—´çš„æ—‹è½¬è§’åº¦
 			float rotatedAngle = getRotatedAngle(refImg[matchIdx], testImg,GoodMatchePoints, keypointsRef[matchIdx], keypoints1);
 
-			//»ñÈ¡µ±Ç°²âÊÔÍ¼Æ¬×îĞ¡°üÎ§¾ØĞÎ
+			//è·å–å½“å‰æµ‹è¯•å›¾ç‰‡æœ€å°åŒ…å›´çŸ©å½¢
 			RotatedRect rrect = getMinRect(sourceImg);
 			
 
