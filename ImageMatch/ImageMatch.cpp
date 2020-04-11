@@ -491,77 +491,61 @@ int main(int argc, char* argv[])
 			sift(sourceImg, Mat(), keypoints1, descriptors1);
 			//int maxValue = 0;
 			//int maxIndex = 0;
-			int matchIdx = 0;
+			int matchIdx = -1;
 			vector<DMatch> GoodPoints;
 			findGoodMatcheImage(descriptors1, featuressRef, matchIdx, GoodMatchePoints);
 			
-
 			tm.stop();
 		
-			double singleTestTime = tm.getTimeMilli();
-			/*
-			for (int i = 0; i < refNum; i++)
+			if(matchIdx ！= -1)
 			{
-				vector<DMatch> tmpGoodPoints;
-				//GoodMatchePoints.clear();
-				findGoodMatchePoints(featuressRef[i], descriptors1, tmpGoodPoints);
+				double singleTestTime = tm.getTimeMilli();
 
-				int tmpVal = tmpGoodPoints.size();
-				//匹配最多的认为是相对应的图像
-				if (tmpVal > maxValue)
-				{
-					GoodMatchePoints.clear();
-					maxValue = tmpVal;
-					maxIndex = i;
-					GoodMatchePoints.assign(tmpGoodPoints.begin(), tmpGoodPoints.end());
-				}
+				//计算当前测试图片与匹配参考图片之间的旋转角度
+				float rotatedAngle = getRotatedAngle(refImg[matchIdx], testImg,GoodMatchePoints, keypointsRef[matchIdx], keypoints1);
+
+				//获取当前测试图片最小包围矩形
+				RotatedRect rrect = getMinRect(sourceImg);
+
+
+				Mat roImg;
+				rotate_bound(testImg, rotatedAngle, roImg);
+
+				Point2f rect_points[4];
+				rrect.points(rect_points);
+				line(testImg, rect_points[0], rect_points[1], Scalar(0, 0, 255), 2, LINE_AA);
+				line(testImg, rect_points[1], rect_points[2], Scalar(0, 0, 255), 2, LINE_AA);
+				line(testImg, rect_points[2], rect_points[3], Scalar(0, 0, 255), 2, LINE_AA);
+				line(testImg, rect_points[3], rect_points[0], Scalar(0, 0, 255), 2, LINE_AA);
+
+				Point2f center0 = Point2f((rect_points[0].x + rect_points[1].x) / 2, (rect_points[0].y + rect_points[1].y) / 2);
+				Point2f center1 = Point2f((rect_points[1].x + rect_points[2].x)/2,(rect_points[1].y + rect_points[2].y)/2);
+				Point2f center2 = Point2f((rect_points[2].x + rect_points[3].x) / 2, (rect_points[2].y + rect_points[3].y) / 2);
+				Point2f center3 = Point2f((rect_points[0].x + rect_points[3].x) / 2, (rect_points[0].y + rect_points[3].y) / 2);
+
+
+				line(testImg, center0, center2, Scalar(0, 0, 255), 1, LINE_AA);
+
+				line(testImg, center1, center3, Scalar(0, 0, 255), 1, LINE_AA);
+
+				String strAngle = format("%.2f", rotatedAngle);
+				std::string text = "The slope angle is " + strAngle + " degree."; 
+
+				cv::putText(testImg, text, cv::Point(10, 20),0, 0.5, (255, 0, 255), 1);
+
+				cout << "single image test time: " << singleTestTime << " ms; " << endl;
+				cout << ">" << endl;
+				cout << "The type of the test image is " << refName[matchIdx] << endl;
+				cout << ">" << endl;
+				cout << "The slope angle of the image is " << strAngle << endl;
+				cout << ">" << endl;
+				imshow(testFileName, testImg);
+				waitKey(0);	
 			}
-			*/
-			//计算当前测试图片与匹配参考图片之间的旋转角度
-			float rotatedAngle = getRotatedAngle(refImg[matchIdx], testImg,GoodMatchePoints, keypointsRef[matchIdx], keypoints1);
-
-			//获取当前测试图片最小包围矩形
-			RotatedRect rrect = getMinRect(sourceImg);
-			
-
-			Mat roImg;
-			rotate_bound(testImg, rotatedAngle, roImg);
-			
-			Point2f rect_points[4];
-			rrect.points(rect_points);
-			line(testImg, rect_points[0], rect_points[1], Scalar(0, 0, 255), 2, LINE_AA);
-			line(testImg, rect_points[1], rect_points[2], Scalar(0, 0, 255), 2, LINE_AA);
-			line(testImg, rect_points[2], rect_points[3], Scalar(0, 0, 255), 2, LINE_AA);
-			line(testImg, rect_points[3], rect_points[0], Scalar(0, 0, 255), 2, LINE_AA);
-
-			Point2f center0 = Point2f((rect_points[0].x + rect_points[1].x) / 2, (rect_points[0].y + rect_points[1].y) / 2);
-			Point2f center1 = Point2f((rect_points[1].x + rect_points[2].x)/2,(rect_points[1].y + rect_points[2].y)/2);
-			Point2f center2 = Point2f((rect_points[2].x + rect_points[3].x) / 2, (rect_points[2].y + rect_points[3].y) / 2);
-			Point2f center3 = Point2f((rect_points[0].x + rect_points[3].x) / 2, (rect_points[0].y + rect_points[3].y) / 2);
-			
-			
-			line(testImg, center0, center2, Scalar(0, 0, 255), 1, LINE_AA);
-
-			line(testImg, center1, center3, Scalar(0, 0, 255), 1, LINE_AA);
-
-			String strAngle = format("%.2f", rotatedAngle);
-			std::string text = "The slope angle is " + strAngle + " degree."; 
-
-			cv::putText(testImg, text, cv::Point(10, 20),0, 0.5, (255, 0, 255), 1);
-
-			cout << "single image test time: " << singleTestTime << " ms; " << endl;
-			cout << ">" << endl;
-			cout << "The type of the test image is " << refName[matchIdx] << endl;
-			cout << ">" << endl;
-			cout << "The slope angle of the image is " << strAngle << endl;
-			cout << ">" << endl;
-			//imshow("rotateImage", roImg);
-
-			//imshow("refImage", refImg[matchIdx]);
-			//string fileName = 
-			imshow(testFileName, testImg);
-			waitKey(0);
-			//Mat corrImg = 
+			else
+			{
+				cout << "Don't find the match image " << endl;
+			}
 		}
 
 		
